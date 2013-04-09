@@ -6,11 +6,27 @@
 Welcome to Soylent's documentation!
 ===================================
 
+Quite a lot of people
+who have heard about soylent
+have toyed with the idea of mixing their own.
+
+In my case, 
+looking for the optimal mix of components,
+with so many components to choose from,
+became a ground for fiddling around.
+
+What if I could just put a list of ingredients in a database, 
+together with their nutritional values,
+and some kind of software could create a mix 
+that has the right amount of every nutrient?
+
+This is my attempt at creating such a software.
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
-
+   
 
 
 Indices and tables
