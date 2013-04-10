@@ -27,6 +27,8 @@ according to different guidelines,
 like the US recommended `Dietary Reference Intake`_,
 or the `EU-Directive 2008-100-EC`_.
 
+But for the moment, let us ignore all these, and simply have a nutrient with one name.
+
 .. _`Dietary Reference Intake`: http://fnic.nal.usda.gov/dietary-guidance/dietary-reference-intakes/dri-tables
 .. _`EU-Directive 2008-100-EC`: http://ec.europa.eu/food/food/labellingnutrition/nutritionlabel/index_en.htm
 
@@ -34,3 +36,6 @@ This gives us the following Definitions:
 
 .. literalinclude:: ../soylent/models.py
    :linenos:
+   :start-after: # Definition of nutrient
+   :end-before: # End of Nutrient definition
+
