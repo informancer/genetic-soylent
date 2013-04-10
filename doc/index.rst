@@ -28,6 +28,7 @@ Contents:
    :maxdepth: 2
    
    developpers
+   tools
 
 Indices and tables
 ==================
