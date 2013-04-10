@@ -5,14 +5,16 @@ from models import Base, Nutrient
 import argparse
 
 def add_nutrient(session, args):
-    print 'Add Nutrient', args.name
     n = Nutrient(args.name)
     session.add(n)
     session.commit()
-    print dir(session)
+    print 'Added Nutrient', args.name
 
 def list(session, args):
-    print 'List', args.name
+    # Get the class for the query
+    query_class = eval(args.name.capitalize())
+    for item in session.query(query_class).order_by('name'):
+        print item
 
 # Define the main parser
 parser = argparse.ArgumentParser(description="CLI for soylent")
