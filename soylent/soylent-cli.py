@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Nutrient
+from models import Base, Nutrient
 import argparse
 
 def add_nutrient(session, args):
@@ -14,15 +14,16 @@ def add_nutrient(session, args):
 def list(session, args):
     print 'List', args.name
 
-
-
-
 # Define the main parser
 parser = argparse.ArgumentParser(description="CLI for soylent")
 parser.add_argument('-s',
                     action='store',
                     help='Connection string for the DB',
                     default='sqlite:///soylent.db')
+parser.add_argument('--init',
+                    action='store_true',
+                    help='Initialize the DB')
+
 subparsers = parser.add_subparsers(help='Actions to perform')
 
 # Define a subparser for the add action
@@ -48,8 +49,11 @@ if __name__ == '__main__':
 
     # Initialize our DB connection
     engine = create_engine(args.s)
+    if args.init:
+        Base.metadata.create_all(engine) 
+
     Session = sessionmaker(bind=engine)    
     session = Session()
 
-    # Check what we need to do
+    # Do what we need to do
     args.func(session, args)
