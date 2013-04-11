@@ -39,3 +39,19 @@ This gives us the following Definitions:
    :start-after: # Definition of nutrient
    :end-before: # End of Nutrient definition
 
+Ingredient
+==========
+
+An ingredient has a name, logically,
+it is also measured in a specific unit 
+and contains some nutrients per servings.
+
+To simplify usage, we'll use quantities for servings and nutrients per servings.
+
+.. literalinclude:: ../soylent/models.py
+   :linenos:
+   :start-after: # Definition of ingredient
+   :end-before: # End of Ingredient definition
+
+The relationship between nutrients and ingredients is many to many, 
+plus the quantity. This is represented by an association object in sqlalchemy.

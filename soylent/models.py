@@ -20,3 +20,30 @@ class Nutrient(Base):
 
 # End of Nutrient definition
 
+# Definition of Ingredient
+class Ingredient(Base):
+    __tablename__ = "Ingredients"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
+    serving_size = Column(Integer)
+    serving_unit = Column(String)
+
+    def __init__(self, name, serving_size, serving_unit):
+        self._name = name
+        self._serving_size = serving_size
+        self._serving_unit = serving_unit
+        
+# End of ingredient definition
+
+# Association between ingredient and nutrients
+class IngredientNutriment(Base):
+    __tablename__ = "IngredientsNutriments"
+    
+    ingredient_id = Column(Integer, ForeignKey("ingredients.id"), primary_key=True)
+    nutrient_id = Column(Integer, ForeignKey("nutrients.id"), primary_key=True)
+    quantity = Column(Integer)
+    unit = Column(String)
+
+# End of ingedients nutrients association definition
+
