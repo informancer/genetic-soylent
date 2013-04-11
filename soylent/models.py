@@ -40,8 +40,8 @@ class Ingredient(Base):
 class IngredientNutriment(Base):
     __tablename__ = "IngredientsNutriments"
     
-    ingredient_id = Column(Integer, ForeignKey("ingredients.id"), primary_key=True)
-    nutrient_id = Column(Integer, ForeignKey("nutrients.id"), primary_key=True)
+    ingredient_id = Column(Integer, ForeignKey("Ingredients.id"), primary_key=True)
+    nutrient_id = Column(Integer, ForeignKey("Nutrients.id"), primary_key=True)
     quantity = Column(Integer)
     unit = Column(String)
 
