@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Base, Nutrient
+from models import Base, Nutrient, Ingredient
 import argparse
 
 def add_nutrient(session, args):
@@ -9,6 +9,12 @@ def add_nutrient(session, args):
     session.add(n)
     session.commit()
     print 'Added Nutrient', args.name
+
+def add_ingredient(session, agrs):
+    i = Ingredient(args.name, args.serving_size, args.serving_unit)
+    session.add(i)
+    session.commit()
+    print 'Added Ingredient', args.name
 
 def list(session, args):
     # Get the class for the query
@@ -37,12 +43,19 @@ add_nutrient_subparser = add_subparsers.add_parser('nutrient', help='Adds a new 
 add_nutrient_subparser.add_argument('name', type=str, help='Name of the nutrient')
 add_nutrient_subparser.set_defaults(func=add_nutrient)
 
+# Second type to add, the ingredients
+add_ingredient_subparser = add_subparsers.add_parser('ingredient', help='Adds a new ingredient')
+add_ingredient_subparser.add_argument('name', type=str, help='Name of the new ingredient')
+add_ingredient_subparser.add_argument('serving_size', type=int, help='Serving size for the nutrients per servings definition')
+add_ingredient_subparser.add_argument('serving_unit', type=str, help='Unit for the serving size')
+add_ingredient_subparser.set_defaults(func=add_ingredient)
+
 # Second Action: listing the entries
 list_subparser = subparsers.add_parser('list', help='Lists a new entry')
 list_subparser.add_argument('name', 
                             type=str, 
                             help='Name of the type to list',
-                            choices=['nutrient'])
+                            choices=['nutrient', 'ingredient'])
 list_subparser.set_defaults(func=list)
 
 if __name__ == '__main__':
