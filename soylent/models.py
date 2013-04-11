@@ -30,9 +30,12 @@ class Ingredient(Base):
     serving_unit = Column(String)
 
     def __init__(self, name, serving_size, serving_unit):
-        self._name = name
-        self._serving_size = serving_size
-        self._serving_unit = serving_unit
+        self.name = name
+        self.serving_size = serving_size
+        self.serving_unit = serving_unit
+
+    def __str__(self):
+        return self.name
         
 # End of ingredient definition
 
