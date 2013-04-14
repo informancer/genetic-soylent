@@ -52,7 +52,7 @@ class IngredientNutrient(Base):
                               backref=backref("ingredients_nutrients",
                                               cascade="all, delete-orphan")
                               )
-
+    nutrient = relationship(Nutrient)
 
 # End of ingedients nutrients association definition
 
