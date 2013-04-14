@@ -40,8 +40,8 @@ class Ingredient(Base):
 # End of ingredient definition
 
 # Association between ingredient and nutrients
-class IngredientNutriment(Base):
-    __tablename__ = "IngredientsNutriments"
+class IngredientNutrient(Base):
+    __tablename__ = "IngredientsNutrients"
     
     ingredient_id = Column(Integer, ForeignKey("Ingredients.id"), primary_key=True)
     nutrient_id = Column(Integer, ForeignKey("Nutrients.id"), primary_key=True)
