@@ -29,6 +29,8 @@ class Ingredient(Base):
     serving_size = Column(Integer)
     serving_unit = Column(String)
 
+    nutrients = association_proxy("ingredient_nutrients", "nutrient")
+
     def __init__(self, name, serving_size, serving_unit):
         self.name = name
         self.serving_size = serving_size
