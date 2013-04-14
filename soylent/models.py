@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.orm.collections import attribute_mapped_collection
+
 Base = declarative_base()
 
 # Definition of nutrient
@@ -52,6 +54,7 @@ class IngredientNutrient(Base):
 
     ingredient = relationship(Ingredient,
                               backref=backref("ingredient_nutrients",
+                                              collection_class=attribute_mapped_collection("nutrient.name"),
                                               cascade="all, delete-orphan")
                               )
     nutrient = relationship(Nutrient)
