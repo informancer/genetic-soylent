@@ -29,9 +29,9 @@ def add_nutrient(session, args):
 
     ingredient_nutrient = IngredientNutrient(ingredient=ingredient,
                                              nutrient=nutrient)
-    concentration_per_serving = mg(args.quantity, args.unit)    
-    concentration = concentration_per_serving/ingredient.serving
-    concentration.ounit('%s/%s'%(concentration_per_serving.out_unit, 
+    quantity_per_serving = mg(args.quantity, args.unit)    
+    concentration = quantity_per_serving/ingredient.serving
+    concentration.ounit('%s/%s'%(quantity_per_serving.out_unit, 
                                  ingredient.serving.out_unit))
     ingredient_nutrient.concentration = concentration
     session.add(ingredient_nutrient)
