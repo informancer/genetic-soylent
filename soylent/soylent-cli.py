@@ -28,7 +28,8 @@ def add_nutrient(session, args):
     nutrient = session.query(Nutrient).filter(Nutrient.name == args.nutrient)[0]
 
     ingredient_nutrient = IngredientNutrient(ingredient=ingredient,
-                                             nutrient=nutrient)
+                                             nutrient=nutrient,
+                                             amount_unit=args.unit)
     quantity_per_serving = mg(args.quantity, args.unit)    
     concentration = quantity_per_serving/ingredient.serving
     concentration.ounit('%s/%s'%(quantity_per_serving.out_unit, 
@@ -39,8 +40,9 @@ def add_nutrient(session, args):
 
 def show_nutrients(session, args):
     ingredient = session.query(Ingredient).filter(Ingredient.name == args.ingredient)[0]
-    for name, nutrient in ingredient.nutrients.iteritems():
-        print nutrient
+    serving = ingredient.serving
+    for name, nutrient in ingredient.ingredient_nutrients.iteritems():
+        print name, nutrient.per_serving(serving)
 
 def list(session, args):
     # Get the class for the query

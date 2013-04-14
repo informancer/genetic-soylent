@@ -61,9 +61,9 @@ class IngredientNutrient(Base):
     
     ingredient_id = Column(Integer, ForeignKey("Ingredients.id"), primary_key=True)
     nutrient_id = Column(Integer, ForeignKey("Nutrients.id"), primary_key=True)
-    quantity = Column(Float)
-    unit = Column(String)
-
+    concentration_quantity = Column(Float)
+    concentration_unit = Column(String)
+    amount_unit = Column(String)
     ingredient = relationship(Ingredient,
                               backref=backref("ingredient_nutrients",
                                               collection_class=attribute_mapped_collection("nutrient.name"),
@@ -73,12 +73,17 @@ class IngredientNutrient(Base):
 
     @property
     def concentration(self):
-        return  mg(self.quantity, self.unit)
+        return  mg(self.concentration_quantity, self.concentration_unit)
 
     @concentration.setter
     def concentration(self, value):
-        self.quantity = value.toval()
-        self.unit = value.out_unit
+        self.concentration_quantity = value.toval()
+        self.concentration_unit = value.out_unit
+
+    def per_serving(self, serving):
+        amount = self.concentration * serving
+        amount.ounit(self.amount_unit)
+        return amount
 
 # End of ingedients nutrients association definition
 
