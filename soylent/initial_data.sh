@@ -4,7 +4,7 @@
 rm blah.db
 
 # Create the nutrients
-nutrients=( Calcium Chlorid Chrom Copper Fluorid Iodine Iron Magnesium Manganese Molybdenum Phosphorus Potassium Selenium Sodium Zinc "Vitamin A" "Vitamin B1" "Vitamin B2" "Vitamin B3" "Vitamin B5" "Vitamin B6" "Vitamin B7" "Vitamin B9" "Vitamin B12" "Vitamin C" "Vitamin D" "Vitamin E" "Choline" "Vitamin K" )
+nutrients=( Calcium Chlorid Chrom Copper Fluorid Iodine Iron Magnesium Manganese Molybdenum Phosphorus Potassium Selenium Sodium Zinc "Vitamin A" "Vitamin B1" "Vitamin B2" "Niacin" "Pantothenic acid" "Vitamin B6" "Biotin" "Folic acid" "Vitamin B12" "Vitamin C" "Vitamin D" "Vitamin E" "Choline" "Vitamin K" )
 
 for n in "${nutrients[@]}"; do
     #echo p
@@ -15,4 +15,13 @@ done;
 python soylent-cli.py --init -s sqlite:///blah.db new ingredient Multisaft 100 ml
 
 # Add some nutrients
+python soylent-cli.py -s sqlite:///blah.db add nutrient "Vitamin C" 40 mg Multisaft
+python soylent-cli.py -s sqlite:///blah.db add nutrient "Niacin" 8 mg Multisaft
+python soylent-cli.py -s sqlite:///blah.db add nutrient "Vitamin E" 6 mg Multisaft
+python soylent-cli.py -s sqlite:///blah.db add nutrient "Pantothenic acid" 120 ug Multisaft
+python soylent-cli.py -s sqlite:///blah.db add nutrient "Vitamin B6" 0.7 mg Multisaft
+python soylent-cli.py -s sqlite:///blah.db add nutrient "Vitamin B1" 0.55 mg Multisaft
 python soylent-cli.py -s sqlite:///blah.db add nutrient "Vitamin A" 120 ug Multisaft
+python soylent-cli.py -s sqlite:///blah.db add nutrient "Folic acid" 100 ug Multisaft
+python soylent-cli.py -s sqlite:///blah.db add nutrient "Biotin" 25 ug Multisaft
+python soylent-cli.py -s sqlite:///blah.db add nutrient "Vitamin B12" 1.25 ug Multisaft
