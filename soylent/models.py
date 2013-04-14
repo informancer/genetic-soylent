@@ -49,7 +49,7 @@ class IngredientNutrient(Base):
     unit = Column(String)
 
     ingredient = relationship(Ingredient,
-                              backref=backref("ingredients_nutrients",
+                              backref=backref("ingredient_nutrients",
                                               cascade="all, delete-orphan")
                               )
     nutrient = relationship(Nutrient)

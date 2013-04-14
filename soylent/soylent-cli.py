@@ -32,7 +32,7 @@ def add_nutrient(session, args):
 
 def show_nutrients(session, args):
     ingredient = session.query(Ingredient).filter(Ingredient.name == args.ingredient)[0]
-    for nutrient in ingredient.ingredients_nutrients:
+    for nutrient in ingredient.ingredient_nutrients:
         print nutrient.nutrient
 
 def list(session, args):
