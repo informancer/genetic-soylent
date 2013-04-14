@@ -4,6 +4,9 @@ from sqlalchemy.orm import sessionmaker
 from models import Base, Nutrient, Ingredient, IngredientNutrient
 import argparse
 
+from magnitude import mg
+
+
 def new_nutrient(session, args):
     n = Nutrient(args.name)
     session.add(n)
@@ -23,10 +26,14 @@ def add_nutrient(session, args):
     #  - unknown unit
     ingredient = session.query(Ingredient).filter(Ingredient.name == args.ingredient)[0]
     nutrient = session.query(Nutrient).filter(Nutrient.name == args.nutrient)[0]
+
     ingredient_nutrient = IngredientNutrient(ingredient=ingredient,
-                                             nutrient=nutrient,
-                                             quantity=args.quantity,
-                                             unit=args.unit)
+                                             nutrient=nutrient)
+    concentration_per_serving = mg(args.quantity, args.unit)    
+    concentration = concentration_per_serving/ingredient.serving
+    concentration.ounit('%s/%s'%(concentration_per_serving.out_unit, 
+                                 ingredient.serving.out_unit))
+    ingredient_nutrient.concentration = concentration
     session.add(ingredient_nutrient)
     session.commit()
 
@@ -82,7 +89,7 @@ add_parser = subparsers.add_parser('add')
 add_subparsers = add_parser.add_subparsers()
 add_nutrient_parser = add_subparsers.add_parser('nutrient')
 add_nutrient_parser.add_argument('nutrient', help='nutrient to add')
-add_nutrient_parser.add_argument('quantity', help='quantity per serving')
+add_nutrient_parser.add_argument('quantity', type=int, help='quantity per serving')
 add_nutrient_parser.add_argument('unit', help='unit per serving')
 add_nutrient_parser.add_argument('ingredient', help='ingredient containing the nutrient')
 add_nutrient_parser.set_defaults(func=add_nutrient)

@@ -1,8 +1,10 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, Float, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
+
+from magnitude import mg
 
 Base = declarative_base()
 
@@ -28,15 +30,25 @@ class Ingredient(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
-    serving_size = Column(Integer)
+    serving_size = Column(Float)
     serving_unit = Column(String)
 
     nutrients = association_proxy("ingredient_nutrients", "nutrient")
 
     def __init__(self, name, serving_size, serving_unit):
         self.name = name
-        self.serving_size = serving_size
-        self.serving_unit = serving_unit
+        
+        # use the magnitude in order to ensure that the unit is known
+        self.serving = mg(serving_size, serving_unit)
+
+    @property
+    def serving(self):
+        return mg(self.serving_size, self.serving_unit)
+
+    @serving.setter
+    def serving(self, value):
+        self.serving_size = value.toval()
+        self.serving_unit = value.out_unit
 
     def __str__(self):
         return self.name
@@ -49,7 +61,7 @@ class IngredientNutrient(Base):
     
     ingredient_id = Column(Integer, ForeignKey("Ingredients.id"), primary_key=True)
     nutrient_id = Column(Integer, ForeignKey("Nutrients.id"), primary_key=True)
-    quantity = Column(Integer)
+    quantity = Column(Float)
     unit = Column(String)
 
     ingredient = relationship(Ingredient,
@@ -58,6 +70,15 @@ class IngredientNutrient(Base):
                                               cascade="all, delete-orphan")
                               )
     nutrient = relationship(Nutrient)
+
+    @property
+    def concentration(self):
+        return  mg(self.quantity, self.unit)
+
+    @concentration.setter
+    def concentration(self, value):
+        self.quantity = value.toval()
+        self.unit = value.out_unit
 
 # End of ingedients nutrients association definition
 
