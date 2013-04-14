@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Base, Nutrient, Ingredient
+from models import Base, Nutrient, Ingredient, IngredientNutrient
 import argparse
 
 def new_nutrient(session, args):
@@ -15,6 +15,20 @@ def new_ingredient(session, agrs):
     session.add(i)
     session.commit()
     print 'Added Ingredient', args.name
+
+def add_nutrient(session, args):
+    # TODO Add error handling/
+    #  - unknown nutrient
+    #  - unknown ingredient
+    #  - unknown unit
+    ingredient = session.query(Ingredient).filter(Ingredient.name == args.ingredient)[0]
+    nutrient = session.query(Nutrient).filter(Nutrient.name == args.nutrient)[0]
+    ingredient_nutrient = IngredientNutrient(ingredient_id=ingredient.id,
+                                             nutrient_id=nutrient.id,
+                                             quantity=args.quantity,
+                                             unit=args.unit)
+    session.add(ingredient_nutrient)
+    session.commit()
 
 def list(session, args):
     # Get the class for the query
@@ -57,6 +71,16 @@ list_subparser.add_argument('name',
                             help='Name of the type to list',
                             choices=['nutrient', 'ingredient'])
 list_subparser.set_defaults(func=list)
+
+# Adding nutrients to an ingredient
+add_parser = subparsers.add_parser('add')
+add_subparsers = add_parser.add_subparsers()
+add_nutrient_parser = add_subparsers.add_parser('nutrient')
+add_nutrient_parser.add_argument('nutrient', help='nutrient to add')
+add_nutrient_parser.add_argument('quantity', help='quantity per serving')
+add_nutrient_parser.add_argument('unit', help='unit per serving')
+add_nutrient_parser.add_argument('ingredient', help='ingredient containing the nutrient')
+add_nutrient_parser.set_defaults(func=add_nutrient)
 
 if __name__ == '__main__':
     
