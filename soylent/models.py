@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
-
+from sqlalchemy.ext.associationproxy import association_proxy
 Base = declarative_base()
 
 # Definition of nutrient
@@ -47,6 +47,12 @@ class IngredientNutrient(Base):
     nutrient_id = Column(Integer, ForeignKey("Nutrients.id"), primary_key=True)
     quantity = Column(Integer)
     unit = Column(String)
+
+    ingredient = relationship(Ingredient,
+                              backref=backref("ingredients_nutrients",
+                                              cascade="all, delete-orphan")
+                              )
+
 
 # End of ingedients nutrients association definition
 

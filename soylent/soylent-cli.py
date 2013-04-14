@@ -30,6 +30,11 @@ def add_nutrient(session, args):
     session.add(ingredient_nutrient)
     session.commit()
 
+def show_nutrients(session, args):
+    ingredient = session.query(Ingredient).filter(Ingredient.name == args.ingredient)[0]
+    for nutrient in ingredient.ingredients_nutrients:
+        print nutrient.nutrient_id
+
 def list(session, args):
     # Get the class for the query
     query_class = eval(args.name.capitalize())
@@ -81,6 +86,14 @@ add_nutrient_parser.add_argument('quantity', help='quantity per serving')
 add_nutrient_parser.add_argument('unit', help='unit per serving')
 add_nutrient_parser.add_argument('ingredient', help='ingredient containing the nutrient')
 add_nutrient_parser.set_defaults(func=add_nutrient)
+
+# Show the nutrients in an ingredient
+show_parser = subparsers.add_parser('show')
+show_subparsers = show_parser.add_subparsers()
+show_nutrient_parser = show_subparsers.add_parser('nutrient')
+show_nutrient_parser.add_argument('ingredient', help='ingredient containing the nutrients')
+show_nutrient_parser.set_defaults(func=show_nutrients)
+
 
 if __name__ == '__main__':
     
