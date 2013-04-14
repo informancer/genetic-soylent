@@ -135,3 +135,17 @@ class Protein(MacroNutrient):
     def __init__(self, name, essential):
         MacroNutrient.__init__(self, name, 4)
         self.essential = essential
+
+class Carbohydrate(MacroNutrient):
+    __tablename__ = 'Carbohydrates'
+    
+    id = Column(Integer, ForeignKey('MacroNutrients.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'carbohydrate'
+        }
+
+    def __init__(self, name):
+        MacroNutrient.__init__(self, name, 4)
+
+

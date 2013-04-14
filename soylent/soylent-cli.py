@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Base, Nutrient, Ingredient, IngredientNutrient, Protein
+from models import Base, Nutrient, Ingredient, IngredientNutrient, Protein, Carbohydrate
 import argparse
 
 from magnitude import mg
@@ -18,6 +18,12 @@ def new_protein(session, args):
     session.add(n)
     session.commit()
     print 'Added Protein', args.name
+
+def new_carbohydrate(session, args):
+    n = Carbohydrate(args.name)
+    session.add(n)
+    session.commit()
+    print 'Added Carbohydrate', args.name
 
 
 def new_ingredient(session, agrs):
@@ -82,11 +88,17 @@ new_ingredient_subparser.add_argument('serving_size', type=float, help='Serving 
 new_ingredient_subparser.add_argument('serving_unit', type=str, help='Unit for the serving size')
 new_ingredient_subparser.set_defaults(func=new_ingredient)
 
-# First type to add, the protein
+# Add the protein
 new_protein_subparser = new_subparsers.add_parser('protein', help='Adds a new protein')
 new_protein_subparser.add_argument('name', type=str, help='Name of the protein')
 new_protein_subparser.add_argument('--essential', action='store_true')
 new_protein_subparser.set_defaults(func=new_protein)
+
+# Add the carbohydrate
+new_carbohydrate_subparser = new_subparsers.add_parser('carbohydrate', help='Adds a new carbohydrate')
+new_carbohydrate_subparser.add_argument('name', type=str, help='Name of the carbohydrate')
+new_carbohydrate_subparser.add_argument('--essential', action='store_true')
+new_carbohydrate_subparser.set_defaults(func=new_carbohydrate)
 
 
 # Second Action: listing the entries
