@@ -71,6 +71,17 @@ class IngredientNutrient(Base):
                               )
     nutrient = relationship(Nutrient)
 
+    def __init__(self, session, ingredient, nutrient, serving_amount, serving_unit):
+        self.ingredient = ingredient
+        self.nutrient = nutrient
+        self.amount_unit = serving_unit
+
+        quantity_per_serving = mg(serving_amount, serving_unit)    
+        concentration = quantity_per_serving / ingredient.serving
+        concentration.ounit('%s/%s'%(quantity_per_serving.out_unit, 
+                                     ingredient.serving.out_unit))
+        self.concentration = concentration
+
     @property
     def concentration(self):
         return  mg(self.concentration_quantity, self.concentration_unit)

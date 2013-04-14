@@ -26,15 +26,11 @@ def add_nutrient(session, args):
     #  - unknown unit
     ingredient = session.query(Ingredient).filter(Ingredient.name == args.ingredient)[0]
     nutrient = session.query(Nutrient).filter(Nutrient.name == args.nutrient)[0]
-
-    ingredient_nutrient = IngredientNutrient(ingredient=ingredient,
-                                             nutrient=nutrient,
-                                             amount_unit=args.unit)
-    quantity_per_serving = mg(args.quantity, args.unit)    
-    concentration = quantity_per_serving/ingredient.serving
-    concentration.ounit('%s/%s'%(quantity_per_serving.out_unit, 
-                                 ingredient.serving.out_unit))
-    ingredient_nutrient.concentration = concentration
+    ingredient_nutrient = IngredientNutrient(session,
+                                             ingredient = ingredient,
+                                             nutrient = nutrient,
+                                             serving_amount=args.quantity,
+                                             serving_unit=args.unit)
     session.add(ingredient_nutrient)
     session.commit()
 
