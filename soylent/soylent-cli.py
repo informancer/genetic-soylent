@@ -4,13 +4,13 @@ from sqlalchemy.orm import sessionmaker
 from models import Base, Nutrient, Ingredient
 import argparse
 
-def add_nutrient(session, args):
+def new_nutrient(session, args):
     n = Nutrient(args.name)
     session.add(n)
     session.commit()
     print 'Added Nutrient', args.name
 
-def add_ingredient(session, agrs):
+def new_ingredient(session, agrs):
     i = Ingredient(args.name, args.serving_size, args.serving_unit)
     session.add(i)
     session.commit()
@@ -34,21 +34,21 @@ parser.add_argument('--init',
 
 subparsers = parser.add_subparsers(help='Actions to perform')
 
-# Define a subparser for the add action
-add_parser = subparsers.add_parser('add', help='Adds a new entry')
-add_subparsers = add_parser.add_subparsers(help='Type to add')
+# Define a subparser for the new action
+new_parser = subparsers.add_parser('new', help='Adds a new entry')
+new_subparsers = new_parser.add_subparsers(help='Type to add')
 
 # First type to add, the nutrient
-add_nutrient_subparser = add_subparsers.add_parser('nutrient', help='Adds a new nutrient')
-add_nutrient_subparser.add_argument('name', type=str, help='Name of the nutrient')
-add_nutrient_subparser.set_defaults(func=add_nutrient)
+new_nutrient_subparser = new_subparsers.add_parser('nutrient', help='Adds a new nutrient')
+new_nutrient_subparser.add_argument('name', type=str, help='Name of the nutrient')
+new_nutrient_subparser.set_defaults(func=new_nutrient)
 
 # Second type to add, the ingredients
-add_ingredient_subparser = add_subparsers.add_parser('ingredient', help='Adds a new ingredient')
-add_ingredient_subparser.add_argument('name', type=str, help='Name of the new ingredient')
-add_ingredient_subparser.add_argument('serving_size', type=int, help='Serving size for the nutrients per servings definition')
-add_ingredient_subparser.add_argument('serving_unit', type=str, help='Unit for the serving size')
-add_ingredient_subparser.set_defaults(func=add_ingredient)
+new_ingredient_subparser = new_subparsers.add_parser('ingredient', help='Adds a new ingredient')
+new_ingredient_subparser.add_argument('name', type=str, help='Name of the new ingredient')
+new_ingredient_subparser.add_argument('serving_size', type=int, help='Serving size for the nutrients per servings definition')
+new_ingredient_subparser.add_argument('serving_unit', type=str, help='Unit for the serving size')
+new_ingredient_subparser.set_defaults(func=new_ingredient)
 
 # Second Action: listing the entries
 list_subparser = subparsers.add_parser('list', help='Lists a new entry')
