@@ -41,8 +41,9 @@ def add_nutrient(session, args):
 def show_nutrients(session, args):
     ingredient = session.query(Ingredient).filter(Ingredient.name == args.ingredient)[0]
     serving = ingredient.serving
+    print '%s (%s):'%(ingredient.name, ingredient.serving)
     for name, nutrient in ingredient.ingredient_nutrients.iteritems():
-        print name, nutrient.per_serving(serving)
+        print ' -', name, nutrient.per_serving(serving)
 
 def list(session, args):
     # Get the class for the query
