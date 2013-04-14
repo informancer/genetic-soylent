@@ -23,8 +23,8 @@ def add_nutrient(session, args):
     #  - unknown unit
     ingredient = session.query(Ingredient).filter(Ingredient.name == args.ingredient)[0]
     nutrient = session.query(Nutrient).filter(Nutrient.name == args.nutrient)[0]
-    ingredient_nutrient = IngredientNutrient(ingredient_id=ingredient.id,
-                                             nutrient_id=nutrient.id,
+    ingredient_nutrient = IngredientNutrient(ingredient=ingredient,
+                                             nutrient=nutrient,
                                              quantity=args.quantity,
                                              unit=args.unit)
     session.add(ingredient_nutrient)
