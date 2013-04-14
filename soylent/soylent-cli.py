@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Base, Nutrient, Ingredient, IngredientNutrient
+from models import Base, Nutrient, Ingredient, IngredientNutrient, Protein
 import argparse
 
 from magnitude import mg
@@ -12,6 +12,13 @@ def new_nutrient(session, args):
     session.add(n)
     session.commit()
     print 'Added Nutrient', args.name
+
+def new_protein(session, args):
+    n = Protein(args.name, args.essential)
+    session.add(n)
+    session.commit()
+    print 'Added Protein', args.name
+
 
 def new_ingredient(session, agrs):
     i = Ingredient(args.name, args.serving_size, args.serving_unit)
@@ -74,6 +81,13 @@ new_ingredient_subparser.add_argument('name', type=str, help='Name of the new in
 new_ingredient_subparser.add_argument('serving_size', type=float, help='Serving size for the nutrients per servings definition')
 new_ingredient_subparser.add_argument('serving_unit', type=str, help='Unit for the serving size')
 new_ingredient_subparser.set_defaults(func=new_ingredient)
+
+# First type to add, the protein
+new_protein_subparser = new_subparsers.add_parser('protein', help='Adds a new protein')
+new_protein_subparser.add_argument('name', type=str, help='Name of the protein')
+new_protein_subparser.add_argument('--essential', action='store_true')
+new_protein_subparser.set_defaults(func=new_protein)
+
 
 # Second Action: listing the entries
 list_subparser = subparsers.add_parser('list', help='Lists a new entry')

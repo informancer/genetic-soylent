@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, String, ForeignKey
+from sqlalchemy import Column, Boolean, Integer, Float, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -15,12 +15,18 @@ class Nutrient(Base):
     
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
+    type = Column(String) 
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'nutrient',
+        'polymorphic_on': type
+        }
 
     def __init__(self, name):
         self.name = name
 
     def __str__(self):
-        return self.name
+        return self.name    
 
 # End of Nutrient definition
 
@@ -98,3 +104,34 @@ class IngredientNutrient(Base):
 
 # End of ingedients nutrients association definition
 
+# Macronutrient class
+class MacroNutrient(Nutrient):
+    __tablename__ = 'MacroNutrients'
+
+    id = Column(Integer, ForeignKey('Nutrients.id'), primary_key=True)
+    conversion_factor = Column(Integer)
+    
+    __mapper_args__ = {
+        'polymorphic_identity': 'macronutrient'
+        }
+
+    def __init__(self, name, conversion_factor):
+        Nutrient.__init__(self, name)
+        self.conversion_factor = conversion_factor
+
+    # TODO: Conversion from gram to calorie/Joule
+        
+
+class Protein(MacroNutrient):
+    __tablename__ = 'Proteins'
+    
+    id = Column(Integer, ForeignKey('MacroNutrients.id'), primary_key=True)
+    essential = Column(Boolean)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'protein'
+        }
+    
+    def __init__(self, name, essential):
+        MacroNutrient.__init__(self, name, 4)
+        self.essential = essential
