@@ -148,4 +148,21 @@ class Carbohydrate(MacroNutrient):
     def __init__(self, name):
         MacroNutrient.__init__(self, name, 4)
 
+class Fat(MacroNutrient):
+    __tablename__ = 'Fats'
+    
+    id = Column(Integer, ForeignKey('MacroNutrients.id'), primary_key=True)
+    saturated = Column(Boolean)
+    monounsaturated = Column(Boolean)
+    polyunsaturated = Column(Boolean)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'fat'
+        }
+
+    def __init__(self, name, saturated, monounsaturated, polyunsaturated):
+        MacroNutrient.__init__(self, name, 9)
+        self.saturated = saturated
+        self.monounsaturated = monounsaturated
+        self.polyunsaturated = polyunsaturated
 

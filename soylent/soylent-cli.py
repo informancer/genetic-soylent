@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Base, Nutrient, Ingredient, IngredientNutrient, Protein, Carbohydrate
+from models import Base, Nutrient, Ingredient, IngredientNutrient, Protein, Carbohydrate, Fat
 import argparse
 
 from magnitude import mg
@@ -25,6 +25,11 @@ def new_carbohydrate(session, args):
     session.commit()
     print 'Added Carbohydrate', args.name
 
+def new_fat(session, args):
+    n = Fat(args.name, args.saturated, args.monounsaturated, args.polyunsaturated)
+    session.add(n)
+    session.commit()
+    print 'Added Fat', args.name
 
 def new_ingredient(session, agrs):
     i = Ingredient(args.name, args.serving_size, args.serving_unit)
@@ -97,9 +102,16 @@ new_protein_subparser.set_defaults(func=new_protein)
 # Add the carbohydrate
 new_carbohydrate_subparser = new_subparsers.add_parser('carbohydrate', help='Adds a new carbohydrate')
 new_carbohydrate_subparser.add_argument('name', type=str, help='Name of the carbohydrate')
-new_carbohydrate_subparser.add_argument('--essential', action='store_true')
 new_carbohydrate_subparser.set_defaults(func=new_carbohydrate)
 
+# Add the fat
+new_fat_subparser = new_subparsers.add_parser('fat', help='Adds a new fat')
+new_fat_subparser.add_argument('name', type=str, help='Name of the fat')
+saturation_group = new_fat_subparser.add_mutually_exclusive_group()
+saturation_group.add_argument('--saturated', action='store_true')
+saturation_group.add_argument('--monounsaturated', action='store_true')
+saturation_group.add_argument('--polyunsaturated', action='store_true')
+new_fat_subparser.set_defaults(func=new_fat)
 
 # Second Action: listing the entries
 list_subparser = subparsers.add_parser('list', help='Lists a new entry')
