@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.orm.session import object_session
 
 from magnitude import mg
 
@@ -46,6 +47,22 @@ class Ingredient(Base):
         
         # use the magnitude in order to ensure that the unit is known
         self.serving = mg(serving_size, serving_unit)
+
+    @property
+    def macronutrients(self):
+        return object_session(self).query(IngredientNutrient).with_parent(self).join(MacroNutrient)
+
+    @property
+    def proteins(self):
+        return object_session(self).query(IngredientNutrient).with_parent(self).join(Protein)
+
+    @property
+    def carbohydrates(self):
+        return object_session(self).query(IngredientNutrient).with_parent(self).join(Carbohydrate)
+
+    @property
+    def fats(self):
+        return object_session(self).query(IngredientNutrient).with_parent(self).join(Fat)
 
     @property
     def serving(self):
