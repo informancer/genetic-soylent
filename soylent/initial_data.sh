@@ -45,6 +45,7 @@ python soylent-cli.py --init -s sqlite:///blah.db new ingredient Multisaft 100 m
 # Add some nutrients
 python soylent-cli.py -s sqlite:///blah.db add nutrient "Protein" 0.3 g Multisaft
 python soylent-cli.py -s sqlite:///blah.db add nutrient "Carbohydrate" 10.8 g Multisaft
+python soylent-cli.py -s sqlite:///blah.db add nutrient "Fat" 0.1 g Multisaft
 python soylent-cli.py -s sqlite:///blah.db add nutrient "Vitamin C" 40 mg Multisaft
 python soylent-cli.py -s sqlite:///blah.db add nutrient "Niacin" 8 mg Multisaft
 python soylent-cli.py -s sqlite:///blah.db add nutrient "Vitamin E" 6 mg Multisaft
