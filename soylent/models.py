@@ -73,6 +73,14 @@ class Ingredient(Base):
         self.serving_size = value.toval()
         self.serving_unit = value.out_unit
 
+
+    def energy_per_serving(self, serving):
+        total = mg(0, 'J')
+        # somehow, sum does not work on magnitudes
+        for i in [m.weight_per_serving(serving) * m.nutrient.joule_per_gram() for m in self.macronutrients]:
+            total += i
+        return total
+
     def __str__(self):
         return self.name
         
@@ -114,7 +122,7 @@ class IngredientNutrient(Base):
         self.concentration_quantity = value.toval()
         self.concentration_unit = value.out_unit
 
-    def per_serving(self, serving):
+    def weight_per_serving(self, serving):
         amount = self.concentration * serving
         amount.ounit(self.amount_unit)
         return amount
