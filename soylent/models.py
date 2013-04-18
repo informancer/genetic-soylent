@@ -77,7 +77,7 @@ class Ingredient(Base):
     def energy_per_serving(self, serving):
         total = mg(0, 'J')
         # somehow, sum does not work on magnitudes
-        for i in [m.weight_per_serving(serving) * m.nutrient.joule_per_gram() for m in self.macronutrients]:
+        for i in [m.weight_per_serving(serving) * m.nutrient.energy_per_weight for m in self.macronutrients]:
             total += i
         return total
 
@@ -144,8 +144,8 @@ class MacroNutrient(Nutrient):
         Nutrient.__init__(self, name)
         self.conversion_factor = conversion_factor
 
-    # TODO: Conversion from gram to calorie/Joule
-    def joule_per_gram(self):
+    @property
+    def energy_per_weight(self):
         return mg(self.conversion_factor * 1000 * 4.184, "J/g")
 
 class Protein(MacroNutrient):
