@@ -137,7 +137,8 @@ class MacroNutrient(Nutrient):
         self.conversion_factor = conversion_factor
 
     # TODO: Conversion from gram to calorie/Joule
-        
+    def joule_per_gram(self):
+        return mg(self.conversion_factor * 1000 * 4.184, "J/g")
 
 class Protein(MacroNutrient):
     __tablename__ = 'Proteins'
