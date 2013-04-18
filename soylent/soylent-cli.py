@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Base, Nutrient, Ingredient, IngredientNutrient, Protein, Carbohydrate, Fat
+from models import Base, Nutrient, Ingredient, IngredientNutrient, Protein, Carbohydrate, Fat, UpperNutrientLimit, LowerNutrientLimit
 import argparse
 
 from magnitude import mg
@@ -50,6 +50,16 @@ def add_nutrient(session, args):
                                              serving_amount=args.quantity,
                                              serving_unit=args.unit)
     session.add(ingredient_nutrient)
+    session.commit()
+
+def add_limit(session, args):
+    limit_type = {'upper': UpperNutrientLimit,
+                  'lower': LowerNutrientLimit}
+    nutrient = session.query(Nutrient).filter(Nutrient.name == args.nutrient)[0]
+    limit = limit_type[args.type](nutrient_id = nutrient.id,
+                                  type = args.type,
+                                  effect = args.effect)
+    session.add(limit)
     session.commit()
 
 def show_nutrients(session, args):
@@ -132,6 +142,15 @@ add_nutrient_parser.add_argument('quantity', type=float, help='quantity per serv
 add_nutrient_parser.add_argument('unit', help='unit per serving')
 add_nutrient_parser.add_argument('ingredient', help='ingredient containing the nutrient')
 add_nutrient_parser.set_defaults(func=add_nutrient)
+
+# Adding limits to nutrients
+add_limit_parser  = add_subparsers.add_parser('limit')
+add_limit_parser.add_argument('nutrient', type=str)
+add_limit_parser.add_argument('type', type=str, choices=['upper', 'lower'])
+add_limit_parser.add_argument('quantity', type=float, help='quantity per serving')
+add_limit_parser.add_argument('unit', help='unit per serving')
+add_limit_parser.add_argument('effect', help='What happens when you go past the limit')
+add_limit_parser.set_defaults(func=add_limit)
 
 # Show the nutrients in an ingredient
 show_parser = subparsers.add_parser('show')

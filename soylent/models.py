@@ -102,6 +102,7 @@ class IngredientNutrient(Base):
                               )
     nutrient = relationship(Nutrient)
 
+    # TODO: remove session parameter
     def __init__(self, session, ingredient, nutrient, serving_amount, serving_unit):
         self.ingredient = ingredient
         self.nutrient = nutrient
@@ -191,4 +192,33 @@ class Fat(MacroNutrient):
         self.saturated = saturated
         self.monounsaturated = monounsaturated
         self.polyunsaturated = polyunsaturated
+
+class NutrientLimit(Base):
+    __tablename__ = 'NutrientLimit'
+
+    id = Column(Integer, primary_key=True)
+    nutrient_id = Column(Integer, ForeignKey('Nutrients.id'))
+    type = Column(String)
+    effect = Column(String)
+
+    __mapper_args__ = {
+        'polymorphic_on': 'type',
+        }
+
+class UpperNutrientLimit(NutrientLimit):
+    __mapper_args__ = {
+        'polymorphic_identity': 'upper'
+        }
+
+    relationship = relationship(Nutrient, backref=backref('upper_limit'))
+
+class LowerNutrientLimit(NutrientLimit):
+    __mapper_args__ = {
+        'polymorphic_identity': 'lower'
+        }
+
+    relationship = relationship(Nutrient, backref=backref('lower_limit'))
+
+
+       
 
