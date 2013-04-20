@@ -254,7 +254,8 @@ class NutritionGoal(Base):
     
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    energy = Column(Float)
+    energy_amount = Column(Float)
+    energy_unit = Column(String)
     carbohydrates_percentage = Column(Float)
     fats_percentage = Column(Float)
     proteins_percentage = Column(Float)
@@ -262,3 +263,38 @@ class NutritionGoal(Base):
     #TODO: Build Saturated fat, cholesterol and (alpha-)linoleic acid
 
     nutrient_goals = relationship(NutrientGoal)
+
+
+    @property
+    def energy(self):
+        return mg(self.energy_amount, self.energy_unit)
+
+    @energy.setter
+    def energy(self, value):
+        self.energy_amount = value.toval()
+        self.energy_unit = value.out_unit
+
+class Recipe(Base):
+    __tablename__ = 'Recipes'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    
+    recipe_ingredients = relationship('RecipeIngredient')
+    
+    @property
+    def energy(self):
+        total = mg(0, 'J')
+        for i in self.recipe_ingredients:
+            total += i.ingredient.energy_per_serving(i.number_of_servings * i.ingredient.serving)
+        return total
+
+class RecipeIngredient(Base):
+    __tablename__ = 'RecipeIngredients'
+    
+    recipe_id = Column(Integer, ForeignKey('Recipes.id'), primary_key=True)
+    ingredient_id = Column(Integer, ForeignKey('Ingredients.id'), primary_key=True)
+    number_of_servings = Column(Float)
+
+    ingredient = relationship(Ingredient)
+
