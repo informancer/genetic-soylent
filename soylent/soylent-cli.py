@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Base, Nutrient, Ingredient, IngredientNutrient, Protein, Carbohydrate, Fat, UpperNutrientLimit, LowerNutrientLimit
+from models import Base, Nutrient, Ingredient, IngredientNutrient, Protein, Carbohydrate, Fat, UpperNutrientLimit, LowerNutrientLimit, NutritionGoal, NutrientGoal
 import argparse
 
 from magnitude import mg
@@ -37,6 +37,17 @@ def new_ingredient(session, agrs):
     session.commit()
     print 'Added Ingredient', args.name
 
+def new_goal(session, args):
+    energy = mg(args.energy_amount, args.energy_unit)
+    n = NutritionGoal(name=args.name, 
+                      energy=energy,
+                      carbohydrates_percentage = args.carbs,
+                      fats_percentage = args.fats,
+                      proteins_percentage = args.proteins)
+    session.add(n)
+    session.commit()
+    print 'Added Nutrition Goal', args.name
+
 def add_nutrient(session, args):
     # TODO Add error handling/
     #  - unknown nutrient
@@ -61,6 +72,20 @@ def add_limit(session, args):
                                   effect = args.effect)
     session.add(limit)
     session.commit()
+
+def add_goal(session, args):
+    # TODO Add error handling/
+    #  - unknown nutrient
+    #  - unknown ingredient
+    #  - unknown unit
+    goal = session.query(NutritionGoal).filter(NutritionGoal.name == args.goal)[0]
+    nutrient = session.query(Nutrient).filter(Nutrient.name == args.nutrient)[0]
+    nutrient_goal = NutrientGoal(goal,
+                                 nutrient,
+                                 mg(args.quantity, args.unit))
+    session.add(nutrient_goal)
+    session.commit()
+
 
 def show_nutrients(session, args):
     ingredient = session.query(Ingredient).filter(Ingredient.name == args.ingredient)[0]
@@ -125,6 +150,15 @@ saturation_group.add_argument('--monounsaturated', action='store_true')
 saturation_group.add_argument('--polyunsaturated', action='store_true')
 new_fat_subparser.set_defaults(func=new_fat)
 
+new_goal_subparser = new_subparsers.add_parser('goal', help='Adds a new goal')
+new_goal_subparser.add_argument('name', type=str, help='Name of the goal')
+new_goal_subparser.add_argument('energy_amount', type=float)
+new_goal_subparser.add_argument('energy_unit', type=str)
+new_goal_subparser.add_argument('carbs', type=float)
+new_goal_subparser.add_argument('fats', type=float)
+new_goal_subparser.add_argument('proteins', type=float)
+new_goal_subparser.set_defaults(func=new_goal)
+
 # Second Action: listing the entries
 list_subparser = subparsers.add_parser('list', help='Lists a new entry')
 list_subparser.add_argument('name', 
@@ -151,6 +185,14 @@ add_limit_parser.add_argument('quantity', type=float, help='quantity per serving
 add_limit_parser.add_argument('unit', help='unit per serving')
 add_limit_parser.add_argument('effect', help='What happens when you go past the limit')
 add_limit_parser.set_defaults(func=add_limit)
+
+# Adding a goal for a specific nutrient
+add_goal_parser = add_subparsers.add_parser('goal')
+add_goal_parser.add_argument('nutrient', help='nutrient to add')
+add_goal_parser.add_argument('quantity', type=float)
+add_goal_parser.add_argument('unit')
+add_goal_parser.add_argument('goal', help='goal containing the nutrient')
+add_goal_parser.set_defaults(func=add_goal)
 
 # Show the nutrients in an ingredient
 show_parser = subparsers.add_parser('show')

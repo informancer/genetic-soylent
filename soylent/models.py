@@ -5,7 +5,12 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 
-from magnitude import mg
+from magnitude import mg, Magnitude, new_mag
+
+# TODO: find a better place for this
+# Because we'll need it for some ingredients
+pc = Magnitude(1)
+new_mag('pc', pc)
 
 Base = declarative_base()
 
@@ -219,6 +224,41 @@ class LowerNutrientLimit(NutrientLimit):
 
     relationship = relationship(Nutrient, backref=backref('lower_limit'))
 
+class NutrientGoal(Base):
+    __tablename__ = 'NutrientGoals'
+    
+    nutrition_goal_id = Column(Integer, ForeignKey('NutritionGoals.id'), primary_key=True)
+    nutrient_id = Column(Integer, ForeignKey('Nutrients.id'), primary_key=True)
+    goal_amount = Column(Float)
+    goal_unit = Column(String)
 
-       
+    nutrition_goal = relationship('NutritionGoal')
+    nutrient = relationship(Nutrient)
 
+    def __init__(self, nutrition_goal, nutrient, goal):
+        self.nutrition_goal = nutrition_goal
+        self.nutrient = nutrient
+        self.goal = goal
+
+    @property
+    def value(self):
+        return mg(self.goal_amount, self.goal_unit)
+
+    @value.setter
+    def value(self, value):
+        self.goal_amount = value.toval()
+        self.goal_unit = value.out_unit
+
+class NutritionGoal(Base):
+    __tablename__ = "NutritionGoals"
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    energy = Column(Float)
+    carbohydrates_percentage = Column(Float)
+    fats_percentage = Column(Float)
+    proteins_percentage = Column(Float)
+    
+    #TODO: Build Saturated fat, cholesterol and (alpha-)linoleic acid
+
+    nutrient_goals = relationship(NutrientGoal)
