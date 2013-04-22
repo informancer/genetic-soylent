@@ -238,7 +238,7 @@ class NutrientGoal(Base):
     def __init__(self, nutrition_goal, nutrient, goal):
         self.nutrition_goal = nutrition_goal
         self.nutrient = nutrient
-        self.goal = goal
+        self.value = goal
 
     @property
     def value(self):
@@ -264,7 +264,6 @@ class NutritionGoal(Base):
 
     nutrient_goals = relationship(NutrientGoal)
 
-
     @property
     def energy(self):
         return mg(self.energy_amount, self.energy_unit)
@@ -287,6 +286,17 @@ class Recipe(Base):
         total = mg(0, 'J')
         for i in self.recipe_ingredients:
             total += i.ingredient.energy_per_serving(i.number_of_servings * i.ingredient.serving)
+        return total
+
+    def get_nutrient(self, nutrient_name):
+        # TODO, make the unit dynamic
+        total = mg(0, 'g')
+        # TODO: use a join
+        for i in self.recipe_ingredients:
+            try: 
+                total += i.ingredient.ingredient_nutrients[nutrient_name].weight_per_serving(i.number_of_servings * i.ingredient.serving)                
+            except KeyError:
+                pass
         return total
 
 class RecipeIngredient(Base):
