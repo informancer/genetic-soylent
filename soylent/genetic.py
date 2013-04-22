@@ -40,8 +40,21 @@ class GoalEval:
         energy_delta = abs(energy_percent - 100)
         energy_factor = 10 - (min(energy_delta, 100)/10)
         score += energy_factor
-        
+
         # Handle the nutrients
+        for nutrient_goal in self.goal.nutrient_goals:
+            # Also 10 Points for each exact nutrient goal, 0 for a divergence of 100% or more
+            total_nutrient = recipe.get_nutrient(nutrient_goal.nutrient.name)
+            if nutrient_goal.goal_amount != 0:
+                nutrient_percent = (total_nutrient / nutrient_goal.value) * 100
+                nutrient_delta = abs(nutrient_percent - 100)
+                nutrient_factor = 10 - (min(nutrient_delta, 100)/10)
+                score += nutrient_factor
+            else:
+                #TODO for stuff that should be avoided.
+                pass
+
+
 
         return score
 
