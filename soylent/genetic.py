@@ -33,30 +33,26 @@ class GoalEval:
         recipe = self.chromosome_to_recipe(chromosome)
         
         # Handle the energetic goal
-        # 10 Points for the exact caloric goal, 0 for a divergence of 100% or more.
+        # 100 Points for the exact caloric goal, 0 for a divergence of 100% or more.
         # the decrease is linear
-        total_energy = recipe.energy
-        energy_percent = (recipe.energy / goal.energy) * 100
-        energy_delta = abs(energy_percent - 100)
-        energy_factor = 10 - (min(energy_delta, 100)/10)
-        score += energy_factor
+        score += self.valuate_percentage(goal.energy, recipe.energy)
 
         # Handle the nutrients
         for nutrient_goal in self.goal.nutrient_goals:
             # Also 10 Points for each exact nutrient goal, 0 for a divergence of 100% or more
             total_nutrient = recipe.get_nutrient(nutrient_goal.nutrient.name)
             if nutrient_goal.goal_amount != 0:
-                nutrient_percent = (total_nutrient / nutrient_goal.value) * 100
-                nutrient_delta = abs(nutrient_percent - 100)
-                nutrient_factor = 10 - (min(nutrient_delta, 100)/10)
-                score += nutrient_factor
+                score += self.valuate_percentage(nutrient_goal.value, total_nutrient)
             else:
                 #TODO for stuff that should be avoided.
                 pass
 
-
-
         return score
+
+    def valuate_percentage(self, goal, actual):
+        percentage = (actual / goal) * 100
+        delta = abs(percentage - 100)
+        return 100 - min(delta, 100)
 
     def print_chromosome(self, chromosome):
         recipe = self.chromosome_to_recipe(chromosome)
