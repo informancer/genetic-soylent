@@ -33,37 +33,72 @@ class GoalEval:
         recipe = self.chromosome_to_recipe(chromosome)
         
         # Handle the energetic goal
-        # 100 Points for the exact caloric goal, 0 for a divergence of 100% or more.
+        # 10 Points for the exact caloric goal, 0 for a divergence of 100% or more.
         # the decrease is linear
-        score += self.valuate_percentage(goal.energy, recipe.energy)
+        score += self.valuate_percentage(self.goal.energy, recipe.energy)/10
+
+        # About the amounts of protein, fat, etc:
+        score += self.valuate_percentage((self.goal.energy * goal.carbohydrates_percentage /100),
+                                         recipe.carbohydrates_energy)/10
+        score += self.valuate_percentage((self.goal.energy * goal.fats_percentage /100),
+                                         recipe.fats_energy)/10
+        score += self.valuate_percentage((self.goal.energy * goal.proteins_percentage /100),
+                                         recipe.proteins_energy)/10
 
         # Handle the nutrients
         for nutrient_goal in self.goal.nutrient_goals:
             # Also 10 Points for each exact nutrient goal, 0 for a divergence of 100% or more
             total_nutrient = recipe.get_nutrient(nutrient_goal.nutrient.name)
             if nutrient_goal.goal_amount != 0:
-                score += self.valuate_percentage(nutrient_goal.value, total_nutrient)
-            else:
-                #TODO for stuff that should be avoided.
-                pass
+                score += self.valuate_percentage(nutrient_goal.value, total_nutrient)/10
 
-        return score
+            # Do not ever go over the limit, that's a 10 points loss
+            if nutrient_goal.nutrient.upper_limit:
+                try:
+                    if nutrient_goal.nutrient.upper_limit[0].value < total_nutrient:
+                        score -= 10
+                except AttributeError:
+                    print nutrient_goal.nutrient
+                    print nutrient_goal.upper_limit
+                    print dir(nutrient_goal.upper_limit[0])
+                    raise
+
+        return max(0, score)
 
     def valuate_percentage(self, goal, actual):
+        # The valuation should no be linear, so let's try x**2
         percentage = (actual / goal) * 100
         delta = abs(percentage - 100)
-        return 100 - min(delta, 100)
+        raw = 100 - min(delta, 100)
+        return (raw**2)/100
 
     def print_chromosome(self, chromosome):
         recipe = self.chromosome_to_recipe(chromosome)
-        for servings, ingredient in ((chromosome[i], session.query(Ingredient).get(i+1)) for i in range(chromosome.getListSize())):
-            print ingredient.name, (servings * ingredient.serving).ounit(ingredient.serving_unit)
         
         total_energy = recipe.energy
         energy_percent = (recipe.energy / goal.energy) * 100
+        print 'Energy: %s (%.2f%%)'%(recipe.energy, energy_percent)
+        
+        carbohydrates_percent = (recipe.carbohydrates_energy / recipe.energy) * 100
+        print 'Carbohydrate actual/goal: %.2f/%.2f'%(carbohydrates_percent, goal.carbohydrates_percentage)
 
-        print '%s (%.2f%%)'%(recipe.energy, energy_percent)
+        fats_percent = (recipe.fats_energy / recipe.energy) * 100
+        print 'Fat actual/goal: %.2f/%.2f'%(fats_percent, goal.fats_percentage)
 
+        proteins_percent = (recipe.proteins_energy / recipe.energy) * 100
+        print 'Protein actual/goal: %.2f/%.2f'%(proteins_percent, goal.proteins_percentage)
+
+        print '\nIngredients:'
+
+        for servings, ingredient in ((chromosome[i], session.query(Ingredient).get(i+1)) for i in range(chromosome.getListSize())):
+            print ingredient.name, (servings * ingredient.serving).ounit(ingredient.serving_unit)
+
+        print '\nNutrients:'
+        for nutrient_goal in self.goal.nutrient_goals:
+            # Also 10 Points for each exact nutrient goal, 0 for a divergence of 100% or more
+            print nutrient_goal.nutrient.name, '%.2f'%recipe.get_nutrient(nutrient_goal.nutrient.name).ounit(nutrient_goal.goal_unit), 
+            if nutrient_goal.goal_amount != 0:
+                print '%.2f'%(recipe.get_nutrient(nutrient_goal.nutrient.name)/nutrient_goal.value*100)
     
 
 if __name__ == '__main__':

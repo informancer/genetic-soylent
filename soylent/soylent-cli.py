@@ -66,12 +66,18 @@ def add_nutrient(session, args):
 def add_limit(session, args):
     limit_type = {'upper': UpperNutrientLimit,
                   'lower': LowerNutrientLimit}
-    nutrient = session.query(Nutrient).filter(Nutrient.name == args.nutrient)[0]
-    limit = limit_type[args.type](nutrient_id = nutrient.id,
-                                  type = args.type,
-                                  effect = args.effect)
-    session.add(limit)
-    session.commit()
+    try:
+        nutrient = session.query(Nutrient).filter(Nutrient.name == args.nutrient)[0]
+    except IndexError:
+        print "Nutrient not found %s"%args.nutrient
+    else:
+        limit = limit_type[args.type](nutrient_id = nutrient.id,
+                                      type = args.type,
+                                      effect = args.effect,
+                                      limit_value=args.quantity,
+                                      limit_unit=args.unit)
+        session.add(limit)
+        session.commit()
 
 def add_goal(session, args):
     # TODO Add error handling/

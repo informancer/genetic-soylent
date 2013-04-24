@@ -78,11 +78,31 @@ class Ingredient(Base):
         self.serving_size = value.toval()
         self.serving_unit = value.out_unit
 
-
     def energy_per_serving(self, serving):
         total = mg(0, 'J')
         # somehow, sum does not work on magnitudes
         for i in [m.weight_per_serving(serving) * m.nutrient.energy_per_weight for m in self.macronutrients]:
+            total += i
+        return total
+
+    def carbohydrates_per_serving(self, serving):
+        total = mg(0, 'J')
+        # somehow, sum does not work on magnitudes
+        for i in [m.weight_per_serving(serving) * m.nutrient.energy_per_weight for m in self.carbohydrates]:
+            total += i
+        return total
+
+    def fats_per_serving(self, serving):
+        total = mg(0, 'J')
+        # somehow, sum does not work on magnitudes
+        for i in [m.weight_per_serving(serving) * m.nutrient.energy_per_weight for m in self.fats]:
+            total += i
+        return total
+
+    def proteins_per_serving(self, serving):
+        total = mg(0, 'J')
+        # somehow, sum does not work on magnitudes
+        for i in [m.weight_per_serving(serving) * m.nutrient.energy_per_weight for m in self.proteins]:
             total += i
         return total
 
@@ -205,6 +225,18 @@ class NutrientLimit(Base):
     nutrient_id = Column(Integer, ForeignKey('Nutrients.id'))
     type = Column(String)
     effect = Column(String)
+    limit_value = Column(Float)
+    limit_unit = Column(String)
+
+    @property
+    def value(self):
+        return mg(self.limit_value, self.limit_unit)
+
+    @value.setter
+    def value(self, value):
+        self.limit_value = value.toval()
+        self.limit_unit = value.out_unit
+
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
@@ -286,6 +318,27 @@ class Recipe(Base):
         total = mg(0, 'J')
         for i in self.recipe_ingredients:
             total += i.ingredient.energy_per_serving(i.number_of_servings * i.ingredient.serving)
+        return total
+
+    @property
+    def carbohydrates_energy(self):
+        total = mg(0, 'J')
+        for i in self.recipe_ingredients:
+            total += i.ingredient.carbohydrates_per_serving(i.number_of_servings * i.ingredient.serving)
+        return total
+
+    @property
+    def fats_energy(self):
+        total = mg(0, 'J')
+        for i in self.recipe_ingredients:
+            total += i.ingredient.fats_per_serving(i.number_of_servings * i.ingredient.serving)
+        return total
+
+    @property
+    def proteins_energy(self):
+        total = mg(0, 'J')
+        for i in self.recipe_ingredients:
+            total += i.ingredient.proteins_per_serving(i.number_of_servings * i.ingredient.serving)
         return total
 
     def get_nutrient(self, nutrient_name):
