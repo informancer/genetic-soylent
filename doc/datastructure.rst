@@ -19,7 +19,12 @@ An ingredient in turn contains certain quantities of nutrients.
 In order to avoid creating a new file format,
 and to get all the goodies that comes with it,
 for example migration scripts,
-we will use :ref:`SQLAlchemy <sqlalchemy:index_toplevel>` to manage the storage.
+we use :ref:`SQLAlchemy <sqlalchemy:index_toplevel>` to manage the storage.
+
+In order to simplify the management and calculations for the physical quantities,
+we use magnitude_
+
+.. _magnitude: http://juanreyero.com/open/magnitude/
 
 Nutrients types
 ===============
@@ -106,16 +111,58 @@ For the moment, only the :class:`Carbohydrate`, :class:`Fat` and :class:`Protein
 Ingredient
 ==========
 
-An ingredient has a name, logically,
-it is also measured in a specific unit 
-and contains some nutrients per servings.
+Now that we have the nutrients,
+we can pack them in ingredients.
 
-To simplify usage, we'll use quantities for servings and nutrients per servings.
+This is done using two classes:
 
-.. literalinclude:: ../soylent/models.py
-   :linenos:
-   :start-after: # Definition of ingredient
-   :end-before: # End of Ingredient definition
+.. class:: Ingredient(name, serving_size, serving_unit)
 
-The relationship between nutrients and ingredients is many to many, 
-plus the quantity. This is represented by an association object in sqlalchemy.
+   An ingredient has a name, logically,
+   it is also measured in a specific unit 
+   and contains some nutrients per servings.
+
+   .. attribute:: serving
+
+      read/write property for the serving as a physical quantity.
+
+   The instances also contains different read only properties
+   representing the different kind of macronutrients 
+   contained in the Ingredient as a list of :class:`IngredientNutrient`.
+
+   .. attribute:: macronutrients
+   .. attribute:: carbohydrates
+   .. attribute:: fats
+   .. attribute:: proteins
+
+   .. method:: energy_per_serving(self, serving)
+
+      returns the energy contained in a serving in Joules.
+      This is calculated based on the macronutrients contained in the ingredient.
+      
+      Interrestingly, it sometimes is lower than 
+      the energy per serving indicated on the package.   
+
+   In the same way that there are four properties for the macronutrients,
+   there are three different methods to return 
+   the energy provided by the different kinds of macronutrients for a given serving:
+   .. method:: carbohydrates_per_serving(self, serving)
+   .. method:: fats_per_serving(self, serving)
+   .. method:: proteins_per_serving(self, serving)
+
+.. class:: IngredientNutrient(ingredient, nutrient, serving_amount, serving_size)
+  
+   This class is an :ref:`association object<sqlalchemy:association_pattern>` 
+   to join the ingredients with their nutrients. 
+
+   Both ingredient and nutrient can be references using the corresponding 
+   attributes :attr:`ingredient` and :attr:`nutrient`.
+
+   .. attribute:: concentration
+
+      A property representing the concentration of the nutrient for a serving, e.g. '5 g/ml'.
+
+   .. method:: weight_per_serving(serving)
+   
+      The amount of nutrient of a given serving of the ingredient.
+
