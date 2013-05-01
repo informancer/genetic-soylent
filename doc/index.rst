@@ -7,7 +7,7 @@ Welcome to Soylent's documentation!
 ===================================
 
 Quite a lot of people
-who have heard about soylent
+who have heard about soylent_
 have toyed with the idea of mixing their own.
 
 In my case, 
@@ -37,3 +37,4 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. _soylent: http://www.soylent.me/
